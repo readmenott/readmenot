@@ -1,7 +1,9 @@
 "use client";
 import { motion } from "framer-motion";
 
-const EASE = [0.16, 1, 0.3, 1];
+// The "as const" is the fix. It prevents TypeScript from 
+// seeing this as a generic number[] array.
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 export default function AboutPage() {
   return (

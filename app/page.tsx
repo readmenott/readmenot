@@ -4,7 +4,8 @@ import { client } from "@/sanity/lib/client";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-const EASE_WOW = [0.23, 1, 0.32, 1];
+// The "as const" fix ensures Framer Motion accepts this as an Easing tuple
+const EASE_WOW = [0.23, 1, 0.32, 1] as const;
 
 export default function Home() {
   const [resources, setResources] = useState([]);
@@ -42,7 +43,7 @@ export default function Home() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 font-sans min-h-screen bg-white dark:bg-black transition-colors duration-700">
       
-      {/* 1. HERO SECTION - Duplicated Button Removed */}
+      {/* 1. HERO SECTION */}
       <header className="mb-20">
         <motion.div 
           initial={{ opacity: 0, y: 15 }} 

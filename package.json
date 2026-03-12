@@ -5,13 +5,17 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "clean": "npx kill-port 3000 3333 && npm run dev",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sanity:dev": "sanity start"
   },
   "dependencies": {
+    "@portabletext/react": "^6.0.3",
     "@sanity/icons": "^3.7.4",
     "@sanity/image-url": "^1.2.0",
     "@sanity/vision": "^4.22.0",
+    "framer-motion": "^12.35.2",
     "next": "16.1.6",
     "next-sanity": "^11.6.12",
     "react": "19.2.3",

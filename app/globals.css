@@ -1,9 +1,7 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* 1. TAILWIND V4 DARK MODE SETUP */
+@variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -12,15 +10,69 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* 2. CORE COLOR VARIABLES */
+:root {
+  --background: #ffffff;
+  --foreground: #111827;
+}
+
+.dark {
+  --background: #000000;
+  --foreground: #f9fafb;
+}
+
+/* 3. BASE STYLES - FIXES THE HALF-BLACK PAGE ISSUE */
+html, body {
+  background-color: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Smooth transition for the whole screen */
+  transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
+}
+
+/* 4. UTILITIES */
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* 5. TYPOGRAPHY (READMENOT STYLE) */
+.prose {
+  @apply max-w-none;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  @apply tracking-tighter font-black text-zinc-900 dark:text-white mt-12 mb-6;
+}
+
+.prose p {
+  @apply mb-8 leading-[1.8] text-zinc-600 dark:text-zinc-400 text-lg;
+}
+
+.prose strong {
+  @apply text-zinc-900 dark:text-white font-bold;
+}
+
+.prose img {
+  @apply rounded-[40px] border border-zinc-100 dark:border-zinc-800 my-12 shadow-md;
+}
+
+/* Selection Color */
+::selection {
+  @apply bg-blue-600 text-white;
+}
+
+/* Progress Bar Logic */
+#progress-bar {
+  transition: width 0.1s ease-out;
 }

@@ -6,7 +6,8 @@ import { client } from "@/sanity/lib/client";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import React, { use, useState, useEffect } from "react";
 
-const EASE = [0.23, 1, 0.32, 1];
+// The 'as const' suffix fixes the TypeScript Easing error
+const EASE = [0.23, 1, 0.32, 1] as const;
 
 async function getResource(slug: string) {
   const query = `*[_type == "resource" && slug.current == $slug][0]{
@@ -18,7 +19,8 @@ async function getResource(slug: string) {
       contentBlocks[]{
         ...,
         _type == "fileDownload" => { "fileUrl": file.asset->url },
-        _type == "image" => { ..., "asset": asset-> }
+        _type == "image" => { ..., "asset": asset-> },
+        _type == "externalLink" => { label, url }
       }
     }
   }`;
@@ -29,13 +31,21 @@ const ptComponents = {
   types: {
     image: ({ value }: any) => {
       if (!value?.asset) return null;
+      
+      // Determine layout classes based on Sanity selection
+      const layoutClass = value.layout === 'left' 
+        ? 'md:w-1/2 float-left md:mr-10' 
+        : value.layout === 'center' 
+          ? 'max-w-2xl mx-auto' 
+          : 'w-full';
+
       return (
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: EASE }}
-          className={`my-16 overflow-hidden rounded-[40px] border-[5px] border-black dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-none ${value.fullWidth ? 'w-full' : 'max-w-2xl mx-auto'}`}
+          className={`my-12 overflow-hidden rounded-[40px] border-[5px] border-black dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-none ${layoutClass}`}
         >
           <img 
             src={urlFor(value).url()} 
@@ -74,11 +84,25 @@ const ptComponents = {
         </svg>
       </motion.a>
     ),
+    externalLink: ({ value }: any) => (
+      <motion.a 
+        href={value.url} 
+        target="_blank"
+        rel="noopener noreferrer"
+        whileHover={{ scale: 1.02, x: 5 }}
+        className="my-6 flex items-center justify-between p-6 rounded-2xl bg-blue-50 dark:bg-blue-900/10 border-[3px] border-blue-600/20 hover:border-blue-600 transition-all group"
+      >
+        <span className="font-black text-blue-600">{value.label || "Visit Link"}</span>
+        <svg className="w-5 h-5 text-blue-600 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      </motion.a>
+    ),
   },
 };
 
 export default function ResourcePage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = React.use(params);
+  const { slug } = use(params);
   const [resource, setResource] = useState<any>(null);
   const [activeTab, setActiveTab] = useState(-1); 
 
@@ -108,7 +132,6 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
           </h1>
         </header>
 
-        {/* TAB NAVIGATION */}
         <div className="flex flex-wrap gap-4 mb-20 border-b-[5px] border-black dark:border-zinc-800 pb-8">
           <button
             onClick={() => setActiveTab(-1)}
@@ -148,7 +171,6 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
               {activeTab === -1 ? (
                 <section className="group">
                   <div className="flex items-center gap-6 mb-12">
-                    {/* BRIGHT ELECTRIC BLUE NUMBERS */}
                     <span className="text-6xl font-black tracking-tighter text-blue-600/30 dark:text-blue-400/40 transition-all duration-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(37,99,235,0.3)]">
                       00
                     </span>
@@ -164,7 +186,6 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
                 resource.sections && resource.sections[activeTab] && (
                   <section className="group">
                     <div className="flex items-center gap-6 mb-12">
-                      {/* BRIGHT ELECTRIC BLUE NUMBERS */}
                       <span className="text-6xl font-black tracking-tighter text-blue-600/30 dark:text-blue-400/40 transition-all duration-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(37,99,235,0.3)]">
                         0{activeTab + 1}
                       </span>
@@ -172,7 +193,6 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
                         {resource.sections[activeTab].subCategoryName}
                       </h2>
                     </div>
-
                     <article className="prose prose-xl prose-zinc dark:prose-invert max-w-none">
                       <PortableText 
                         value={resource.sections[activeTab].contentBlocks} 

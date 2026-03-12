@@ -10,18 +10,28 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* 2. CORE COLOR VARIABLES */
+/* 2. CORE VARIABLES (Aggressive Values) */
 :root {
   --background: #ffffff;
-  --foreground: #111827;
+  --foreground: #000000;
+  --brutalist-shadow: 12px 12px 0px 0px rgba(0,0,0,1);
+  --brutalist-shadow-hover: 16px 16px 0px 0px rgba(0,0,0,1);
+  --ease-wow: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .dark {
   --background: #000000;
-  --foreground: #f9fafb;
+  --foreground: #ffffff;
+  --brutalist-shadow: 0px 0px 0px 0px rgba(0,0,0,0);
+  --brutalist-shadow-hover: 0px 0px 0px 0px rgba(0,0,0,0);
+  color-scheme: dark;
 }
 
-/* 3. BASE STYLES - FIXES THE HALF-BLACK PAGE ISSUE */
+html.dark {
+  background-color: #000000 !important;
+}
+
+/* 3. BASE STYLES - CINEMATIC THEME SWITCH */
 html, body {
   background-color: var(--background);
   color: var(--foreground);
@@ -30,49 +40,82 @@ html, body {
   padding: 0;
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* Smooth transition for the whole screen */
-  transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
+  /* Keep the 0.8s "Wow" curve for the background ink-bleed */
+  transition: background-color 0.8s var(--ease-wow), color 0.8s var(--ease-wow);
 }
 
-/* 4. UTILITIES */
-@layer utilities {
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+/* 4. ANIMATIONS */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+main {
+  animation: fadeInUp 1.2s var(--ease-wow) forwards;
+}
+
+/* 5. HEAVYWEIGHT COMPONENTS */
+@layer components {
+  .brutalist-card {
+    /* Thick 6px border for that heavy professional frame */
+    @apply border-[6px] border-black dark:border-zinc-800 bg-white dark:bg-zinc-900/40;
+    transition: all 0.5s var(--ease-wow);
+    box-shadow: var(--brutalist-shadow);
   }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+
+  .brutalist-card:hover {
+    /* Aggressive hover lift */
+    @apply -translate-x-1.5 -translate-y-1.5 dark:bg-zinc-900/60;
+    box-shadow: var(--brutalist-shadow-hover);
+  }
+
+  .brutalist-input {
+    /* Heavyweight inputs with custom active state */
+    @apply w-full p-8 pl-16 rounded-2xl border-[6px] border-black dark:border-zinc-800 
+           bg-white dark:bg-zinc-900/50 text-black dark:text-white font-black 
+           placeholder:text-zinc-400 outline-none;
+    transition: all 0.5s var(--ease-wow);
+  }
+
+  .brutalist-input:focus {
+    box-shadow: var(--brutalist-shadow);
+    @apply -translate-y-1;
   }
 }
 
-/* 5. TYPOGRAPHY (READMENOT STYLE) */
-.prose {
-  @apply max-w-none;
-}
-
+/* 6. TYPOGRAPHY (The High-Impact Prose) */
 .prose h1, .prose h2, .prose h3 {
-  @apply tracking-tighter font-black text-zinc-900 dark:text-white mt-12 mb-6;
+  /* Bold, tracking-tighter, and the heavy uppercase style */
+  @apply tracking-tighter font-black text-black dark:text-white mt-16 mb-8 uppercase italic;
+  transition: color 0.8s var(--ease-wow);
 }
 
 .prose p {
-  @apply mb-8 leading-[1.8] text-zinc-600 dark:text-zinc-400 text-lg;
+  @apply mb-8 leading-[1.6] text-black dark:text-zinc-400 text-xl font-bold;
 }
 
 .prose strong {
-  @apply text-zinc-900 dark:text-white font-bold;
+  /* Thick blue underline for emphasis */
+  @apply text-black dark:text-white font-black border-b-[5px] border-blue-600 pb-0.5;
 }
 
 .prose img {
-  @apply rounded-[40px] border border-zinc-100 dark:border-zinc-800 my-12 shadow-md;
+  /* Extreme heavy frame for images */
+  @apply rounded-2xl border-[6px] border-black dark:border-zinc-800 my-16 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] dark:shadow-none;
+  transition: all 0.5s var(--ease-wow);
 }
 
-/* Selection Color */
+/* 7. UTILITIES */
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
 ::selection {
   @apply bg-blue-600 text-white;
 }
 
-/* Progress Bar Logic */
 #progress-bar {
-  transition: width 0.1s ease-out;
+  @apply h-2 bg-blue-600;
+  transition: width 0.1s linear;
 }

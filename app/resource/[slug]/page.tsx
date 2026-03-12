@@ -1,17 +1,26 @@
-import { client } from "@/sanity/lib/client";
+"use client";
 import { PortableText } from "@portabletext/react";
 import { urlFor } from "@/sanity/lib/image";
-import Image from "next/image";
 import Link from "next/link";
-import ThemeToggle from "@/components/ThemeToggle";
+import { client } from "@/sanity/lib/client";
+import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
+import React, { use, useState, useEffect } from "react";
+
+const EASE = [0.23, 1, 0.32, 1];
 
 async function getResource(slug: string) {
   const query = `*[_type == "resource" && slug.current == $slug][0]{
     title,
     category,
-    subCategory,
-    content,
-    "fileUrl": fileUpload.asset->url
+    description, 
+    sections[]{
+      subCategoryName,
+      contentBlocks[]{
+        ...,
+        _type == "fileDownload" => { "fileUrl": file.asset->url },
+        _type == "image" => { ..., "asset": asset-> }
+      }
+    }
   }`;
   return await client.fetch(query, { slug });
 }
@@ -19,111 +28,170 @@ async function getResource(slug: string) {
 const ptComponents = {
   types: {
     image: ({ value }: any) => {
-      if (!value?.asset?._ref) return null;
+      if (!value?.asset) return null;
       return (
-        <div className="relative w-full h-[300px] sm:h-[550px] my-14 overflow-hidden rounded-[40px] border border-zinc-100 dark:border-zinc-800 shadow-sm">
-          <Image
-            src={urlFor(value).url()}
-            alt="Study Guide Visual"
-            fill
-            className="object-cover"
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: EASE }}
+          className={`my-16 overflow-hidden rounded-[40px] border-[5px] border-black dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-none ${value.fullWidth ? 'w-full' : 'max-w-2xl mx-auto'}`}
+        >
+          <img 
+            src={urlFor(value).url()} 
+            alt={value.caption || "Resource Visual"} 
+            className="w-full h-auto object-cover" 
           />
-        </div>
+          {value.caption && (
+            <p className="py-5 px-6 text-center text-[11px] font-black uppercase tracking-widest text-zinc-500 bg-zinc-50 dark:bg-zinc-800/50 border-t-[5px] border-black dark:border-zinc-800">
+              {value.caption}
+            </p>
+          )}
+        </motion.div>
       );
     },
+    fileDownload: ({ value }: any) => (
+      <motion.a 
+        href={value.fileUrl} 
+        download
+        target="_blank"
+        whileHover={{ scale: 1.02, x: 5 }}
+        className="my-10 flex items-center justify-between p-8 rounded-[32px] bg-white dark:bg-zinc-900/40 border-[5px] border-black dark:border-zinc-800 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:shadow-none group transition-all duration-300"
+      >
+        <div className="flex items-center gap-5">
+          <div className="bg-blue-600 p-4 rounded-2xl text-white">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <span className="block font-black text-xl text-black dark:text-white">{value.title || "Download Resource"}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Official PDF • Ready</span>
+          </div>
+        </div>
+        <svg className="w-6 h-6 text-black dark:text-white transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+        </svg>
+      </motion.a>
+    ),
   },
 };
 
-export default async function ResourcePage({ 
-  params 
-}: { 
-  params: Promise<{ slug: string }> 
-}) {
-  const resolvedParams = await params;
-  const resource = await getResource(resolvedParams.slug);
+export default function ResourcePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = React.use(params);
+  const [resource, setResource] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState(-1); 
 
-  if (!resource) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
-        <Link href="/" className="text-sm font-black uppercase tracking-widest text-blue-600">← Back Home</Link>
-      </div>
-    );
-  }
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+
+  useEffect(() => {
+    getResource(slug).then(setResource);
+  }, [slug]);
+
+  if (!resource) return <div className="min-h-screen bg-white dark:bg-black" />;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-500 font-sans selection:bg-blue-600 selection:text-white">
-      
-      {/* 1. SCROLL PROGRESS BAR */}
-      <div className="fixed top-0 left-0 w-full h-1 z-[60] pointer-events-none">
-        <div id="progress-bar" className="h-full bg-blue-600 transition-all duration-150 w-0"></div>
-      </div>
+    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-700">
+      <motion.div className="fixed top-0 left-0 right-0 h-2 bg-blue-600 z-[110] origin-left" style={{ scaleX }} />
 
-      {/* 2. ENHANCED BREADCRUMB NAVIGATION */}
-      <nav className="border-b border-zinc-100 dark:border-zinc-800 sticky top-0 bg-white/90 dark:bg-black/90 backdrop-blur-xl z-50">
-        <div className="max-w-5xl mx-auto py-5 px-6 flex justify-between items-center">
-          <div className="flex items-center gap-4 text-[13px] font-black uppercase tracking-widest">
-            <Link href="/" className="text-blue-600 hover:opacity-70 transition-opacity">HOME</Link>
-            <span className="text-zinc-300 dark:text-zinc-800 font-normal">/</span>
-            <span className="text-zinc-900 dark:text-zinc-100">{resource.category}</span>
+      <main className="max-w-4xl mx-auto px-6 py-24">
+        <header className="mb-16">
+          <div className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-10">
+            <Link href="/" className="hover:text-blue-600 transition-colors">HOME</Link>
+            <span>/</span>
+            <span className="text-black dark:text-white">{resource.category}</span>
           </div>
-          <ThemeToggle />
-        </div>
-      </nav>
 
-      <main className="max-w-3xl mx-auto px-6 py-24">
-        {/* 3. HEADER SECTION */}
-        <header className="mb-20">
-          <div className="inline-block px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-[11px] font-black uppercase tracking-[0.25em] text-blue-600 mb-8">
-            {resource.subCategory || "Masterclass"}
-          </div>
-          <h1 className="text-6xl sm:text-8xl font-black tracking-tighter mb-10 leading-[0.95] text-zinc-900 dark:text-zinc-100">
-            {resource.title}
+          <h1 className="text-6xl sm:text-8xl font-black tracking-tighter mb-12 leading-[0.85] text-black dark:text-white">
+            {resource.title}<span className="text-blue-600">.</span>
           </h1>
-          <div className="h-2 w-28 bg-blue-600 rounded-full"></div>
         </header>
 
-        {/* 4. ARTICLE CONTENT */}
-        <article className="prose prose-xl prose-zinc dark:prose-invert max-w-none 
-          prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-zinc-900 dark:prose-headings:text-white
-          prose-p:leading-[1.8] prose-p:text-zinc-600 dark:prose-p:text-zinc-400
-          prose-strong:text-zinc-900 dark:prose-strong:text-white">
-          <PortableText value={resource.content} components={ptComponents} />
-        </article>
+        {/* TAB NAVIGATION */}
+        <div className="flex flex-wrap gap-4 mb-20 border-b-[5px] border-black dark:border-zinc-800 pb-8">
+          <button
+            onClick={() => setActiveTab(-1)}
+            className={`px-8 py-4 rounded-2xl border-[5px] text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+              activeTab === -1
+                ? "bg-blue-600 border-blue-600 text-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-none translate-x-[-2px] translate-y-[-2px]"
+                : "bg-white dark:bg-zinc-900 border-black dark:border-zinc-800 text-black dark:text-zinc-400 hover:border-blue-600"
+            }`}
+          >
+            Overview
+          </button>
 
-        {/* 5. DOWNLOAD CTA */}
-        {resource.fileUrl && (
-          <div className="mt-32 p-16 rounded-[60px] bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 text-center shadow-inner">
-            <h3 className="text-3xl font-black tracking-tighter mb-4 text-zinc-900 dark:text-zinc-100">Take this with you.</h3>
-            <p className="text-zinc-500 dark:text-zinc-400 mb-10 max-w-sm mx-auto text-lg">
-              Download the official PDF roadmap to keep your prep on track.
-            </p>
-            <a
-              href={resource.fileUrl}
-              target="_blank"
-              className="inline-flex items-center justify-center px-14 py-5 bg-blue-600 text-white rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_20px_50px_rgba(37,99,235,0.3)]"
+          {resource.sections?.map((section: any, index: number) => (
+            <button
+              key={section.subCategoryName}
+              onClick={() => setActiveTab(index)}
+              className={`px-8 py-4 rounded-2xl border-[5px] text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                activeTab === index
+                  ? "bg-blue-600 border-blue-600 text-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-none translate-x-[-2px] translate-y-[-2px]"
+                  : "bg-white dark:bg-zinc-900 border-black dark:border-zinc-800 text-black dark:text-zinc-400 hover:border-blue-600"
+              }`}
             >
-              Download PDF Version
-            </a>
-          </div>
-        )}
+              {section.subCategoryName}
+            </button>
+          ))}
+        </div>
 
-        {/* 6. CLEAN FOOTER */}
-        <footer className="mt-40 pb-16 text-center">
-          <p className="text-[11px] font-black uppercase tracking-[0.5em] text-zinc-300 dark:text-zinc-800">
-            README NOT • 0 TO ADMISSION
+        <div className="relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.5, ease: EASE }}
+            >
+              {activeTab === -1 ? (
+                <section className="group">
+                  <div className="flex items-center gap-6 mb-12">
+                    {/* BRIGHT ELECTRIC BLUE NUMBERS */}
+                    <span className="text-6xl font-black tracking-tighter text-blue-600/30 dark:text-blue-400/40 transition-all duration-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+                      00
+                    </span>
+                    <h2 className="text-4xl font-black tracking-tighter text-black dark:text-white">
+                      Introduction
+                    </h2>
+                  </div>
+                  <article className="prose prose-xl prose-zinc dark:prose-invert max-w-none">
+                    <PortableText value={resource.description} components={ptComponents} />
+                  </article>
+                </section>
+              ) : (
+                resource.sections && resource.sections[activeTab] && (
+                  <section className="group">
+                    <div className="flex items-center gap-6 mb-12">
+                      {/* BRIGHT ELECTRIC BLUE NUMBERS */}
+                      <span className="text-6xl font-black tracking-tighter text-blue-600/30 dark:text-blue-400/40 transition-all duration-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+                        0{activeTab + 1}
+                      </span>
+                      <h2 className="text-4xl font-black tracking-tighter text-black dark:text-white">
+                        {resource.sections[activeTab].subCategoryName}
+                      </h2>
+                    </div>
+
+                    <article className="prose prose-xl prose-zinc dark:prose-invert max-w-none">
+                      <PortableText 
+                        value={resource.sections[activeTab].contentBlocks} 
+                        components={ptComponents} 
+                      />
+                    </article>
+                  </section>
+                )
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <footer className="mt-60 pb-20 text-center border-t-[5px] border-black dark:border-zinc-800 pt-20">
+          <p className="text-[12px] font-black uppercase tracking-[1em] text-zinc-300 dark:text-zinc-800">
+            README NOT • 2026
           </p>
         </footer>
       </main>
-
-      {/* SCRIPT FOR PROGRESS BAR */}
-      <script dangerouslySetInnerHTML={{ __html: `
-        window.onscroll = function() {
-          var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-          var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-          var scrolled = (winScroll / height) * 100;
-          document.getElementById("progress-bar").style.width = scrolled + "%";
-        };
-      `}} />
     </div>
   );
 }

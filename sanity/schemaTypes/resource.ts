@@ -30,16 +30,12 @@ export default defineType({
       },
     }),
 
-    // --- ADDED: OVERVIEW SECTION ---
+    // FIXED: Linking to 'blockContent' preserves your text and fixes image previews
     defineField({
       name: 'description',
       title: 'Overview Content (Section 00)',
       description: 'The introduction text that appears in the first tab.',
-      type: 'array',
-      of: [
-        { type: 'block' },
-        { type: 'image', options: { hotspot: true } }
-      ],
+      type: 'blockContent', 
     }),
 
     defineField({
@@ -60,58 +56,33 @@ export default defineType({
             {
               name: 'contentBlocks',
               title: 'Section Content',
-              type: 'array',
-              of: [
-                { type: 'block' }, 
-                // ENHANCED IMAGE: Control alignment and size
-                {
-                  type: 'image',
-                  title: 'Professional Image',
-                  options: { hotspot: true },
-                  fields: [
-                    { name: 'caption', type: 'string', title: 'Caption' },
-                    { 
-                      name: 'layout', 
-                      type: 'string', 
-                      title: 'Layout Style',
-                      initialValue: 'full',
-                      options: {
-                        list: [
-                          { title: 'Full Width', value: 'full' },
-                          { title: 'Center (Standard)', value: 'center' },
-                          { title: 'Float Left', value: 'left' },
-                        ]
-                      }
-                    }
-                  ]
-                },
-                // ENHANCED PDF: Better labels
-                {
-                  name: 'fileDownload',
-                  type: 'object',
-                  title: 'PDF Download',
-                  fields: [
-                    { name: 'title', type: 'string', title: 'File Label (e.g. Math Practice Pack)' },
-                    { 
-                      name: 'file', 
-                      type: 'file', 
-                      title: 'Upload PDF',
-                      options: { accept: '.pdf' }
-                    }
-                  ]
-                },
-                // ADDED: EXTERNAL LINKS
-                {
-                  name: 'externalLink',
-                  type: 'object',
-                  title: 'External Link',
-                  fields: [
-                    { name: 'label', type: 'string', title: 'Link Text (e.g. Visit CollegeBoard)' },
-                    { name: 'url', type: 'url', title: 'URL' }
-                  ]
-                }
-              ],
+              type: 'blockContent', // Centralized type for stability
             },
+            // Specific utility fields for file downloads
+            {
+              name: 'fileDownload',
+              type: 'object',
+              title: 'PDF Download',
+              fields: [
+                { name: 'title', type: 'string', title: 'File Label' },
+                { 
+                  name: 'file', 
+                  type: 'file', 
+                  title: 'Upload PDF',
+                  options: { accept: '.pdf' }
+                }
+              ]
+            },
+            // External links preserved
+            {
+              name: 'externalLink',
+              type: 'object',
+              title: 'External Link',
+              fields: [
+                { name: 'label', type: 'string', title: 'Link Text' },
+                { name: 'url', type: 'url', title: 'URL' }
+              ]
+            }
           ]
         }
       ]

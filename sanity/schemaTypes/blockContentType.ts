@@ -1,16 +1,5 @@
 import {defineType, defineArrayMember} from 'sanity'
-import {ImageIcon} from '@sanity/icons'
-
-/**
- * This is the schema type for block content used in the post document type
- * Importing this type into the studio configuration's `schema` property
- * lets you reuse it in other document types with:
- *  {
- *    name: 'someName',
- *    title: 'Some title',
- *    type: 'blockContent'
- *  }
- */
+import {ImageIcon, LinkIcon} from '@sanity/icons'
 
 export const blockContentType = defineType({
   title: 'Block Content',
@@ -19,10 +8,6 @@ export const blockContentType = defineType({
   of: [
     defineArrayMember({
       type: 'block',
-      // Styles let you define what blocks can be marked up as. The default
-      // set corresponds with HTML tags, but you can set any title or value
-      // you want, and decide how you want to deal with it where you want to
-      // use your content.
       styles: [
         {title: 'Normal', value: 'normal'},
         {title: 'H1', value: 'h1'},
@@ -32,15 +17,11 @@ export const blockContentType = defineType({
         {title: 'Quote', value: 'blockquote'},
       ],
       lists: [{title: 'Bullet', value: 'bullet'}],
-      // Marks let you mark up inline text in the Portable Text Editor
       marks: {
-        // Decorators usually describe a single property – e.g. a typographic
-        // preference or highlighting
         decorators: [
           {title: 'Strong', value: 'strong'},
           {title: 'Emphasis', value: 'em'},
         ],
-        // Annotations can be any object structure – e.g. a link or a footnote.
         annotations: [
           {
             title: 'URL',
@@ -57,20 +38,69 @@ export const blockContentType = defineType({
         ],
       },
     }),
-    // You can add additional types here. Note that you can't use
-    // primitive types such as 'string' and 'number' in the same array
-    // as a block type.
     defineArrayMember({
       type: 'image',
       icon: ImageIcon,
       options: {hotspot: true},
       fields: [
         {
+          name: 'caption',
+          type: 'string',
+          title: 'Caption',
+          description: 'Text that appears below the image.',
+        },
+        {
           name: 'alt',
           type: 'string',
           title: 'Alternative Text',
-        }
-      ]
+          description: 'Important for SEO and screen readers.',
+        },
+        {
+          name: 'size',
+          type: 'string',
+          title: 'Display Size',
+          options: {
+            list: [
+              {title: 'Standard (Centered)', value: 'center'},
+              {title: 'Full Bleed (Wide)', value: 'full'},
+              {title: 'Compact (Small)', value: 'small'},
+            ],
+          },
+          initialValue: 'center',
+        },
+      ],
+      // This preview logic forces the Studio to show a tidy, small thumbnail
+      preview: {
+        select: {
+          title: 'caption',
+          media: 'asset',
+        },
+        prepare({title, media}) {
+          return {
+            title: title || 'Untitled Image',
+            subtitle: 'Image Block',
+            media,
+          }
+        },
+      },
+    }),
+    defineArrayMember({
+      name: 'externalLink',
+      type: 'object',
+      title: 'External Link/Button',
+      icon: LinkIcon,
+      fields: [
+        {
+          name: 'label',
+          type: 'string',
+          title: 'Link Label',
+        },
+        {
+          name: 'url',
+          type: 'url',
+          title: 'URL',
+        },
+      ],
     }),
   ],
 })

@@ -6,7 +6,7 @@ import { client } from "@/sanity/lib/client";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import React, { use, useState, useEffect } from "react";
 
-// The 'as const' suffix fixes the TypeScript Easing error
+// The 'as const' suffix fixes the TypeScript Easing error for Vercel builds
 const EASE = [0.23, 1, 0.32, 1] as const;
 
 async function getResource(slug: string) {
@@ -32,12 +32,15 @@ const ptComponents = {
     image: ({ value }: any) => {
       if (!value?.asset) return null;
       
-      // Determine layout classes based on Sanity selection
-      const layoutClass = value.layout === 'left' 
-        ? 'md:w-1/2 float-left md:mr-10' 
-        : value.layout === 'center' 
-          ? 'max-w-2xl mx-auto' 
-          : 'w-full';
+      // Responsive layout logic based on Sanity 'size' or 'layout' field
+      const sizeClasses = {
+        center: "max-w-2xl mx-auto rounded-[40px]",
+        full: "w-full rounded-[60px]",
+        small: "max-w-md mx-auto rounded-[24px]"
+      };
+
+      const currentSize = value.size || 'center';
+      const selectedClass = sizeClasses[currentSize as keyof typeof sizeClasses];
 
       return (
         <motion.div 
@@ -45,7 +48,7 @@ const ptComponents = {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: EASE }}
-          className={`my-12 overflow-hidden rounded-[40px] border-[5px] border-black dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-none ${layoutClass}`}
+          className={`my-12 overflow-hidden border-[5px] border-black dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-none ${selectedClass}`}
         >
           <img 
             src={urlFor(value).url()} 
@@ -132,6 +135,7 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
           </h1>
         </header>
 
+        {/* TAB NAVIGATION */}
         <div className="flex flex-wrap gap-4 mb-20 border-b-[5px] border-black dark:border-zinc-800 pb-8">
           <button
             onClick={() => setActiveTab(-1)}
@@ -193,6 +197,7 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
                         {resource.sections[activeTab].subCategoryName}
                       </h2>
                     </div>
+
                     <article className="prose prose-xl prose-zinc dark:prose-invert max-w-none">
                       <PortableText 
                         value={resource.sections[activeTab].contentBlocks} 

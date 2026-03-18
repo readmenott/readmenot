@@ -6,11 +6,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  /* Force Inter for the highest clarity and legibility */
+  --font-sans: 'Inter', var(--font-geist-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
-/* 2. CORE VARIABLES (Aggressive Values) */
+/* 2. CORE VARIABLES (Aggressive Brutalist Values Preserved) */
 :root {
   --background: #ffffff;
   --foreground: #000000;
@@ -22,6 +23,8 @@
 .dark {
   --background: #000000;
   --foreground: #ffffff;
+  /* Pure white for maximum contrast in dark mode */
+  --text-body: #ffffff; 
   --brutalist-shadow: 0px 0px 0px 0px rgba(0,0,0,0);
   --brutalist-shadow-hover: 0px 0px 0px 0px rgba(0,0,0,0);
   color-scheme: dark;
@@ -31,7 +34,7 @@ html.dark {
   background-color: #000000 !important;
 }
 
-/* 3. BASE STYLES - CINEMATIC THEME SWITCH */
+/* 3. BASE STYLES */
 html, body {
   background-color: var(--background);
   color: var(--foreground);
@@ -39,12 +42,12 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: var(--font-sans), system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  /* Keep the 0.8s "Wow" curve for the background ink-bleed */
+  -webkit-font-smoothing: antialiased; /* Essential for text clarity */
+  -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.8s var(--ease-wow), color 0.8s var(--ease-wow);
 }
 
-/* 4. ANIMATIONS */
+/* 4. ANIMATIONS (1.2s preserved) */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
@@ -54,68 +57,61 @@ main {
   animation: fadeInUp 1.2s var(--ease-wow) forwards;
 }
 
-/* 5. HEAVYWEIGHT COMPONENTS */
+/* 5. HEAVYWEIGHT COMPONENTS (6px Borders Preserved) */
 @layer components {
   .brutalist-card {
-    /* Thick 6px border for that heavy professional frame */
     @apply border-[6px] border-black dark:border-zinc-800 bg-white dark:bg-zinc-900/40;
     transition: all 0.5s var(--ease-wow);
     box-shadow: var(--brutalist-shadow);
   }
 
   .brutalist-card:hover {
-    /* Aggressive hover lift */
     @apply -translate-x-1.5 -translate-y-1.5 dark:bg-zinc-900/60;
     box-shadow: var(--brutalist-shadow-hover);
   }
 
   .brutalist-input {
-    /* Heavyweight inputs with custom active state */
     @apply w-full p-8 pl-16 rounded-2xl border-[6px] border-black dark:border-zinc-800 
            bg-white dark:bg-zinc-900/50 text-black dark:text-white font-black 
            placeholder:text-zinc-400 outline-none;
     transition: all 0.5s var(--ease-wow);
   }
-
-  .brutalist-input:focus {
-    box-shadow: var(--brutalist-shadow);
-    @apply -translate-y-1;
-  }
 }
 
-/* 6. TYPOGRAPHY (The High-Impact Prose) */
+/* 6. TYPOGRAPHY - THE "READMENOT" ELITE FIX */
 .prose h1, .prose h2, .prose h3 {
-  /* Bold, tracking-tighter, and the heavy uppercase style */
-  @apply tracking-tighter font-black text-black dark:text-white mt-16 mb-8 uppercase italic;
-  transition: color 0.8s var(--ease-wow);
+  /* Removed 'italic' and tightened line-height to 1.05 for high density */
+  @apply tracking-tighter font-black text-black dark:text-white mt-12 mb-6 uppercase leading-[1.05];
 }
 
 .prose p {
-  @apply mb-8 leading-[1.6] text-black dark:text-zinc-400 text-xl font-bold;
+  /* FIX: Reduced leading to 1.4 for tighter density, preserved weight 500 */
+  @apply mb-6 leading-[1.4] text-black dark:text-white text-xl font-medium antialiased;
 }
 
 .prose strong {
-  /* Thick blue underline for emphasis */
   @apply text-black dark:text-white font-black border-b-[5px] border-blue-600 pb-0.5;
 }
 
-.prose img {
-  /* Extreme heavy frame for images */
-  @apply rounded-2xl border-[6px] border-black dark:border-zinc-800 my-16 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] dark:shadow-none;
-  transition: all 0.5s var(--ease-wow);
+/* FIX: High-contrast Blue Link Styling */
+.prose a {
+  @apply text-blue-600 dark:text-blue-400 font-bold underline decoration-[3px] underline-offset-4 hover:text-blue-500 transition-colors cursor-pointer;
 }
 
-/* 7. UTILITIES */
-@layer utilities {
-  .scrollbar-hide::-webkit-scrollbar { display: none; }
-  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+/* 7. ROADMAP / CHECKBOX STYLE */
+.roadmap-container {
+  @apply flex items-center gap-4 mb-6 p-6 border-[6px] border-black dark:border-zinc-800 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30;
 }
 
+.roadmap-checkbox {
+  @apply w-8 h-8 border-[4px] border-black dark:border-white rounded-lg appearance-none checked:bg-blue-600 cursor-pointer transition-all flex-shrink-0;
+}
+
+/* UTILITIES */
 ::selection {
   @apply bg-blue-600 text-white;
 }
 
 #progress-bar {
   @apply h-2 bg-blue-600;
-  transition: width 0.1s linear;
 }

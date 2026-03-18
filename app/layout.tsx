@@ -45,11 +45,11 @@ export default function RootLayout({
               </Link>
 
               <div className="flex items-center gap-6 sm:gap-10">
-                {/* DESKTOP LINKS */}
-                <div className="hidden sm:flex gap-8 text-[12px] font-black uppercase tracking-[0.2em] text-black dark:text-zinc-400">
-                  <Link href="/" className="hover:text-blue-600 dark:hover:text-white transition-colors">Resources</Link>
-                  <Link href="/roadmap" className="hover:text-blue-600 dark:hover:text-white transition-colors">Roadmap</Link>
-                  <Link href="/about" className="hover:text-blue-600 dark:hover:text-white transition-colors">About</Link>
+                {/* DESKTOP LINKS - FIXED: Changed dark:text-zinc-400 to dark:text-white */}
+                <div className="hidden sm:flex gap-8 text-[12px] font-black uppercase tracking-[0.2em] text-black dark:text-white">
+                  <Link href="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Resources</Link>
+                  <Link href="/roadmap" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Roadmap</Link>
+                  <Link href="/about" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</Link>
                 </div>
 
                 {/* THE ONLY THEME TOGGLE - Make sure to delete any other buttons in Home.tsx */}

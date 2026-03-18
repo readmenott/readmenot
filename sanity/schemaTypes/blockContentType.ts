@@ -1,5 +1,5 @@
 import {defineType, defineArrayMember} from 'sanity'
-import {ImageIcon, LinkIcon} from '@sanity/icons'
+import {ImageIcon, DownloadIcon, MasterDetailIcon} from '@sanity/icons'
 
 export const blockContentType = defineType({
   title: 'Block Content',
@@ -16,11 +16,15 @@ export const blockContentType = defineType({
         {title: 'H4', value: 'h4'},
         {title: 'Quote', value: 'blockquote'},
       ],
-      lists: [{title: 'Bullet', value: 'bullet'}],
+      lists: [
+        {title: 'Bullet (Boxed Square)', value: 'bullet'}, 
+        {title: 'Numbered', value: 'number'},
+      ],
       marks: {
         decorators: [
           {title: 'Strong', value: 'strong'},
           {title: 'Emphasis', value: 'em'},
+          {title: 'Code', value: 'code'},
         ],
         annotations: [
           {
@@ -32,29 +36,59 @@ export const blockContentType = defineType({
                 title: 'URL',
                 name: 'href',
                 type: 'url',
+                validation: Rule => Rule.uri({
+                  scheme: ['http', 'https', 'mailto', 'tel']
+                })
               },
+              {
+                title: 'Open in new tab',
+                name: 'blank',
+                type: 'boolean',
+                initialValue: true 
+              }
             ],
           },
         ],
       },
     }),
+
+    // ADDITION: THE ROADMAP OBJECT (Matches Image 3)
+    defineArrayMember({
+      name: 'roadmap',
+      type: 'object',
+      title: 'Roadmap Timeline',
+      icon: MasterDetailIcon,
+      fields: [
+        {
+          name: 'steps',
+          type: 'array',
+          title: 'Roadmap Steps',
+          of: [
+            {
+              type: 'object',
+              fields: [
+                { name: 'year', type: 'string', title: 'Year/Grade (e.g. 10th Grade)' },
+                { name: 'title', type: 'string', title: 'Step Title (e.g. Testing)' },
+                { 
+                  name: 'tasks', 
+                  type: 'array', 
+                  title: 'Tasks', 
+                  of: [{ type: 'string' }] 
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }),
+
     defineArrayMember({
       type: 'image',
       icon: ImageIcon,
       options: {hotspot: true},
       fields: [
-        {
-          name: 'caption',
-          type: 'string',
-          title: 'Caption',
-          description: 'Text that appears below the image.',
-        },
-        {
-          name: 'alt',
-          type: 'string',
-          title: 'Alternative Text',
-          description: 'Important for SEO and screen readers.',
-        },
+        { name: 'caption', type: 'string', title: 'Caption' },
+        { name: 'alt', type: 'string', title: 'Alternative Text' },
         {
           name: 'size',
           type: 'string',
@@ -69,38 +103,29 @@ export const blockContentType = defineType({
           initialValue: 'center',
         },
       ],
-      // This preview logic forces the Studio to show a tidy, small thumbnail
-      preview: {
-        select: {
-          title: 'caption',
-          media: 'asset',
-        },
-        prepare({title, media}) {
-          return {
-            title: title || 'Untitled Image',
-            subtitle: 'Image Block',
-            media,
-          }
-        },
-      },
     }),
+
     defineArrayMember({
-      name: 'externalLink',
+      name: 'fileDownload',
       type: 'object',
-      title: 'External Link/Button',
-      icon: LinkIcon,
+      title: 'File Download',
+      icon: DownloadIcon,
       fields: [
         {
-          name: 'label',
+          name: 'title',
           type: 'string',
-          title: 'Link Label',
+          title: 'Download Title',
+          placeholder: 'e.g., IELTS Practice Test PDF'
         },
         {
-          name: 'url',
-          type: 'url',
-          title: 'URL',
-        },
-      ],
+          name: 'file',
+          type: 'file',
+          title: 'Upload File',
+          options: {
+            accept: '.pdf,.doc,.docx,.zip'
+          }
+        }
+      ]
     }),
   ],
 })

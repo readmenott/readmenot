@@ -9,12 +9,14 @@ export default defineType({
       name: 'title',
       title: 'Title',
       type: 'string',
+      validation: Rule => Rule.required()
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
       options: { source: 'title', maxLength: 96 },
+      validation: Rule => Rule.required()
     }),
     defineField({
       name: 'category',
@@ -28,14 +30,15 @@ export default defineType({
           { title: 'General', value: 'General' },
         ],
       },
+      validation: Rule => Rule.required()
     }),
 
-    // FIXED: Linking to 'blockContent' preserves your text and fixes image previews
     defineField({
       name: 'description',
       title: 'Overview Content (Section 00)',
       description: 'The introduction text that appears in the first tab.',
-      type: 'blockContent', 
+      type: 'blockContent',
+      validation: Rule => Rule.required()
     }),
 
     defineField({
@@ -52,40 +55,30 @@ export default defineType({
               name: 'subCategoryName',
               title: 'Sub-Category Name',
               type: 'string',
+              validation: Rule => Rule.required()
             },
             {
               name: 'contentBlocks',
               title: 'Section Content',
-              type: 'blockContent', // Centralized type for stability
+              description: 'Add bullet lists, roadmaps, text, images, and links here',
+              type: 'blockContent',
+              validation: Rule => Rule.required()
             },
-            // Specific utility fields for file downloads
-            {
-              name: 'fileDownload',
-              type: 'object',
-              title: 'PDF Download',
-              fields: [
-                { name: 'title', type: 'string', title: 'File Label' },
-                { 
-                  name: 'file', 
-                  type: 'file', 
-                  title: 'Upload PDF',
-                  options: { accept: '.pdf' }
-                }
-              ]
+          ],
+          preview: {
+            select: {
+              title: 'subCategoryName',
             },
-            // External links preserved
-            {
-              name: 'externalLink',
-              type: 'object',
-              title: 'External Link',
-              fields: [
-                { name: 'label', type: 'string', title: 'Link Text' },
-                { name: 'url', type: 'url', title: 'URL' }
-              ]
+            prepare({ title }) {
+              return {
+                title: title || 'Untitled Section',
+                subtitle: 'Section Content',
+              }
             }
-          ]
+          }
         }
-      ]
+      ],
+      validation: Rule => Rule.required().min(1)
     }),
 
     defineField({
@@ -94,6 +87,28 @@ export default defineType({
       type: 'array',
       of: [{ type: 'string' }],
       options: { layout: 'tags' },
+      description: 'Add tags like "Reading", "Listening", "Math" for better search'
+    }),
+
+    defineField({
+      name: 'publishedAt',
+      title: 'Published Date',
+      type: 'datetime',
+      initialValue: () => new Date().toISOString(),
     }),
   ],
+
+  preview: {
+    select: {
+      title: 'title',
+      category: 'category',
+      slug: 'slug.current',
+    },
+    prepare({ title, category, slug }) {
+      return {
+        title: title,
+        subtitle: `${category} • /${slug}`,
+      }
+    }
+  }
 })

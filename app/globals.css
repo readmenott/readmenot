@@ -72,33 +72,67 @@ main {
 
   .brutalist-input {
     @apply w-full p-8 pl-16 rounded-2xl border-[6px] border-black dark:border-zinc-800 
-           bg-white dark:bg-zinc-900/50 text-black dark:text-white font-black 
+           bg-white dark:bg-zinc-900/50 text-black dark:text-white font-medium 
            placeholder:text-zinc-400 outline-none;
     transition: all 0.5s var(--ease-wow);
   }
 }
 
-/* 6. TYPOGRAPHY - THE "READMENOT" ELITE FIX */
+/* 6. TYPOGRAPHY - NO BLUE LINES, WHITE TEXT */
 .prose h1, .prose h2, .prose h3 {
-  /* Removed 'italic' and tightened line-height to 1.05 for high density */
-  @apply tracking-tighter font-black text-black dark:text-white mt-12 mb-6 uppercase leading-[1.05];
+  @apply tracking-tighter font-black text-black dark:text-white leading-[1.2];
+  text-decoration: none;
 }
 
 .prose p {
-  /* FIX: Reduced leading to 1.4 for tighter density, preserved weight 500 */
-  @apply mb-6 leading-[1.4] text-black dark:text-white text-xl font-medium antialiased;
+  @apply mb-4 leading-[1.5] text-black dark:text-white text-base font-normal antialiased;
+  text-decoration: none;
 }
 
 .prose strong {
-  @apply text-black dark:text-white font-black border-b-[5px] border-blue-600 pb-0.5;
+  @apply text-black dark:text-white font-bold;
+  text-decoration: none;
+  border: none;
 }
 
-/* FIX: High-contrast Blue Link Styling */
-.prose a {
-  @apply text-blue-600 dark:text-blue-400 font-bold underline decoration-[3px] underline-offset-4 hover:text-blue-500 transition-colors cursor-pointer;
+.prose em {
+  @apply text-black dark:text-white italic;
+  text-decoration: none;
 }
 
-/* 7. ROADMAP / CHECKBOX STYLE */
+/* ONLY LINKS WITH href GET BLUE AND UNDERLINE */
+.prose a[href] {
+  @apply text-blue-600 dark:text-blue-400 font-medium underline decoration-[3px] underline-offset-4 hover:text-blue-500 transition-colors cursor-pointer;
+}
+
+/* Links without href - NO STYLING */
+.prose a:not([href]) {
+  @apply text-black dark:text-white;
+  text-decoration: none;
+}
+
+/* 7. PLACEHOLDER TEXT - WHITE */
+input::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+input::-webkit-input-placeholder {
+  color: white;
+  opacity: 1;
+}
+
+input::-moz-placeholder {
+  color: white;
+  opacity: 1;
+}
+
+input:-ms-input-placeholder {
+  color: white;
+  opacity: 1;
+}
+
+/* 8. ROADMAP / CHECKBOX STYLE */
 .roadmap-container {
   @apply flex items-center gap-4 mb-6 p-6 border-[6px] border-black dark:border-zinc-800 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30;
 }

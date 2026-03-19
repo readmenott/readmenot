@@ -19,7 +19,25 @@ async function getResource(slug: string) {
         ...,
         _type == "fileDownload" => { "fileUrl": file.asset->url },
         _type == "image" => { ..., "asset": asset-> },
-        _type == "externalLink" => { label, url }
+        _type == "externalLink" => { label, url },
+        _type == "bulletList" => {
+          items[] {
+            text,
+            icon,
+            highlight
+          }
+        },
+        _type == "roadmap" => {
+          steps[] {
+            year,
+            title,
+            color,
+            tasks[] {
+              task,
+              completed
+            }
+          }
+        }
       }
     }
   }`;
@@ -28,25 +46,40 @@ async function getResource(slug: string) {
 
 const ptComponents = {
   block: {
-    // FIXED: Reduced weight to font-normal and tightened line spacing
     normal: ({ children }: any) => (
-      <p className="mb-6 leading-[1.4] font-normal text-zinc-900 dark:text-zinc-200 text-lg max-w-2xl">
+      <p className="mb-6 leading-[1.4] font-normal text-black dark:text-white text-lg max-w-2xl">
         {children}
       </p>
+    ),
+    h1: ({ children }: any) => (
+      <h1 className="text-4xl font-black mb-6 text-black dark:text-white leading-[1.2]">{children}</h1>
+    ),
+    h2: ({ children }: any) => (
+      <h2 className="text-2xl font-black mb-4 text-black dark:text-white leading-[1.2]">{children}</h2>
+    ),
+    h3: ({ children }: any) => (
+      <h3 className="text-xl font-black mb-3 text-black dark:text-white leading-[1.2]">{children}</h3>
     ),
   },
   marks: {
     textColor: ({ children, value }: any) => {
-      return <span style={{ color: value.value }}>{children}</span>;
+      const colorMap: any = {
+        blue: 'text-blue-500',
+        red: 'text-red-500',
+        green: 'text-green-500',
+        yellow: 'text-yellow-400',
+        purple: 'text-purple-500',
+      };
+      return <span className={colorMap[value?.color] || 'text-white'}>{children}</span>;
     },
     link: ({ children, value }: any) => {
-      const isExternal = !value.href.startsWith("/");
+      const isExternal = !value.href?.startsWith("/");
       return (
         <a 
           href={value.href} 
           target={value.blank || isExternal ? "_blank" : undefined}
           rel={isExternal ? "noopener noreferrer" : undefined}
-          className="text-blue-600 dark:text-blue-400 font-black underline decoration-[2px] underline-offset-4 hover:opacity-80 transition-all cursor-pointer"
+          className="text-blue-600 dark:text-blue-400 font-medium underline decoration-[2px] underline-offset-3 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
         >
           {children}
         </a>
@@ -55,13 +88,11 @@ const ptComponents = {
   },
 
   list: {
-    // FIXED: Reduced gap between list items to keep it compact
     bullet: ({ children }: any) => <ul className="space-y-4 mb-10 list-none max-w-2xl">{children}</ul>,
     task: ({ children }: any) => <div className="space-y-4 mb-12 max-w-2xl">{children}</div>,
   },
 
   listItem: {
-    // FIXED: Blue Square Boxes - set font-black for the uppercase text but normal leading
     bullet: ({ children }: any) => (
       <li className="flex items-center p-5 rounded-[24px] border-[4px] border-black dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-black dark:text-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-none transition-all hover:translate-x-1">
         <div className="mr-5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
@@ -86,6 +117,101 @@ const ptComponents = {
   },
 
   types: {
+    /* PROFESSIONAL BULLET LIST */
+    bulletList: ({ value }: any) => (
+      <div className="my-8 space-y-3 max-w-2xl">
+        {value.items?.map((item: any, index: number) => {
+          const iconMap: any = {
+            circle: '●',
+            checkmark: '✓',
+            arrow: '→',
+            diamond: '◆',
+            star: '★',
+          };
+          const icon = iconMap[item.icon] || '●';
+          
+          return (
+            <div 
+              key={index}
+              className={`flex items-start p-4 rounded-lg border-l-4 ${
+                item.highlight
+                  ? 'border-blue-600 bg-blue-600/10'
+                  : 'border-zinc-700 bg-zinc-900/40'
+              }`}
+            >
+              <span className={`mr-4 text-lg font-bold flex-shrink-0 ${item.highlight ? 'text-blue-500' : 'text-white'}`}>
+                {icon}
+              </span>
+              <span className="text-white font-normal leading-[1.5]">
+                {item.text}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    ),
+
+    /* ENHANCED ROADMAP TIMELINE */
+    roadmap: ({ value }: any) => (
+      <div className="relative my-8 pl-8 max-w-2xl">
+        {/* Timeline line */}
+        <div className="absolute left-3 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-600 to-blue-400" />
+        
+        <div className="space-y-12">
+          {value.steps?.map((step: any, index: number) => {
+            const colorMap: any = {
+              blue: { bg: 'bg-blue-600', text: 'text-blue-500', border: 'border-blue-600' },
+              green: { bg: 'bg-green-600', text: 'text-green-500', border: 'border-green-600' },
+              purple: { bg: 'bg-purple-600', text: 'text-purple-500', border: 'border-purple-600' },
+              orange: { bg: 'bg-orange-600', text: 'text-orange-500', border: 'border-orange-600' },
+              red: { bg: 'bg-red-600', text: 'text-red-500', border: 'border-red-600' },
+            };
+            const color = colorMap[step.color] || colorMap.blue;
+            
+            return (
+              <div key={index} className="relative">
+                {/* Timeline dot */}
+                <div className={`absolute -left-[22px] top-1 h-6 w-6 rounded-full border-4 border-black dark:border-zinc-800 ${color.bg} shadow-lg`} />
+                
+                {/* Step content */}
+                <div className="pt-2">
+                  <span className={`text-sm font-bold uppercase tracking-widest ${color.text}`}>
+                    {step.year}
+                  </span>
+                  <h3 className="text-2xl font-black mt-2 mb-4 text-white uppercase tracking-tighter leading-[1.2]">
+                    {step.title}
+                  </h3>
+                  
+                  {/* Tasks */}
+                  {step.tasks && step.tasks.length > 0 && (
+                    <ul className="space-y-2 pl-0">
+                      {step.tasks.map((taskItem: any, i: number) => (
+                        <li 
+                          key={i}
+                          className={`flex items-start p-3 rounded-md border-l-2 ${
+                            taskItem.completed
+                              ? 'border-green-500 bg-green-500/10 line-through'
+                              : 'border-zinc-700 bg-zinc-900/40'
+                          }`}
+                        >
+                          <span className={`mr-3 font-bold flex-shrink-0 ${taskItem.completed ? 'text-green-500' : 'text-white'}`}>
+                            {taskItem.completed ? '✓' : '○'}
+                          </span>
+                          <span className="text-white font-normal leading-[1.5]">
+                            {taskItem.task}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ),
+
     image: ({ value }: any) => {
       if (!value?.asset) return null;
       const sizeClasses = {
@@ -117,6 +243,7 @@ const ptComponents = {
         </motion.div>
       );
     },
+
     fileDownload: ({ value }: any) => (
       <motion.a 
         href={value.fileUrl} 
@@ -221,7 +348,6 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
                       Introduction
                     </h2>
                   </div>
-                  {/* REMOVED prose class to allow custom component styling */}
                   <article className="max-w-none text-black dark:text-white">
                     <PortableText value={resource.description} components={ptComponents} />
                   </article>

@@ -411,7 +411,7 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
         </div>
 
         <footer className="mt-60 pb-16 text-center border-t-[6px] border-black dark:border-zinc-800 pt-16">
-          <p className="text-[12px] font-black uppercase tracking-[1em] text-zinc-300 dark:text-[#f5f5f5]">
+          <p className="text-[12px] font-black uppercase tracking-[1em] text-black dark:text-[#f5f5f5]">
             README NOT • 2026
           </p>
         </footer>

@@ -3,11 +3,18 @@ import "./globals.css";
 import Link from "next/link";
 import { ThemeProvider } from "next-themes";
 import ThemeToggle from "@/components/ThemeToggle";
+import { Inter } from "next/font/google";
 
 export const metadata: Metadata = {
   title: "ReadMeNot | Your Admission Roadmap",
   description: "From 0 to International Admission",
 };
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
 
 export default function RootLayout({
   children,
@@ -31,7 +38,9 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased bg-white dark:bg-black text-black dark:text-[#f5f5f5] transition-colors duration-700">
+      <body
+        className={`${inter.className} antialiased bg-white dark:bg-black text-black dark:text-[#f5f5f5] transition-colors duration-700`}
+      >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           {/* NAVIGATION */}
           <nav className="sticky top-0 z-[100] w-full border-b-[5px] border-black bg-white/95 backdrop-blur-md dark:border-zinc-800 dark:bg-black/95 transition-all duration-500">

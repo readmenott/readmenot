@@ -34,12 +34,12 @@ export default function AboutPage() {
             Why ReadMeNot?
           </h2>
           {/* FIXED: Changed gray text to white/zinc-100 for better dark mode readability */}
-          <p className="text-lg leading-[1.8] text-zinc-600 dark:text-zinc-100 mb-8 font-medium">
+          <p className="text-lg text-zinc-700 dark:text-white font-medium">
             The international university application process is intentionally complex. 
             Information is often scattered across forums, paywalled by consultants, 
             or buried in outdated PDF guides.
           </p>
-          <p className="text-lg leading-[1.8] text-zinc-600 dark:text-zinc-100 font-medium">
+          <p className="text-lg text-zinc-700 dark:text-white font-medium">
             ReadMeNot is built to provide a structured, step-by-step roadmap for 
             ambitious students. From mastering the SAT to building a world-class profile, 
             we provide the strategy without the gatekeeping.
@@ -52,12 +52,12 @@ export default function AboutPage() {
         <div className="p-8 rounded-3xl border-[5px] border-black dark:border-zinc-800 bg-white dark:bg-zinc-900/30">
           <h4 className="text-lg font-black tracking-tighter text-black dark:text-white mb-2 uppercase">Verified</h4>
           {/* FIXED: High contrast white text for dark mode */}
-          <p className="text-zinc-600 dark:text-white font-medium">Materials derived from successful top-tier admissions and faculty expertise.</p>
+          <p className="text-zinc-700 dark:text-white font-medium">Materials derived from successful top-tier admissions and faculty expertise.</p>
         </div>
         <div className="p-8 rounded-3xl border-[5px] border-black dark:border-zinc-800 bg-white dark:bg-zinc-900/30">
           <h4 className="text-lg font-black tracking-tighter text-black dark:text-white mb-2 uppercase">Accessible</h4>
           {/* FIXED: High contrast white text for dark mode */}
-          <p className="text-zinc-600 dark:text-white font-medium">Free forever. No paywalls, no sign-ups, no hidden costs.</p>
+          <p className="text-zinc-700 dark:text-white font-medium">Free forever. No paywalls, no sign-ups, no hidden costs.</p>
         </div>
       </div>
 

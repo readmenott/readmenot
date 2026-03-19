@@ -20,7 +20,7 @@ export default function ResourceCard({ title, description, tag }: ResourceProps)
       <h3 className="text-2xl font-black tracking-tighter mt-2 mb-3 text-black dark:text-white leading-[1.2]">
         {title}
       </h3>
-      <p className="text-zinc-600 dark:text-[#e0e0e0] font-normal leading-[1.5] text-sm">
+      <p className="text-zinc-600 dark:text-[#f5f5f5] font-normal leading-[1.4] text-sm">
         {description}
       </p>
     </motion.div>

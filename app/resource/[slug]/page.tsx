@@ -47,7 +47,7 @@ async function getResource(slug: string) {
 const ptComponents = {
   block: {
     normal: ({ children }: any) => (
-      <p className="mb-6 leading-[1.4] font-normal text-black dark:text-white text-lg max-w-2xl">
+      <p className="mb-4 leading-[1.55] font-normal text-black dark:text-white text-[16px]">
         {children}
       </p>
     ),
@@ -60,6 +60,14 @@ const ptComponents = {
     h3: ({ children }: any) => (
       <h3 className="text-xl font-black mb-3 text-black dark:text-white leading-[1.2]">{children}</h3>
     ),
+    h4: ({ children }: any) => (
+      <h4 className="text-lg font-black mb-4 text-black dark:text-white leading-[1.25]">{children}</h4>
+    ),
+    blockquote: ({ children }: any) => (
+      <blockquote className="mb-4 p-4 rounded-xl border-[4px] border-black dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 text-black dark:text-white leading-[1.55]">
+        {children}
+      </blockquote>
+    ),
   },
   marks: {
     textColor: ({ children, value }: any) => {
@@ -70,8 +78,15 @@ const ptComponents = {
         yellow: 'text-yellow-400',
         purple: 'text-purple-500',
       };
-      return <span className={colorMap[value?.color] || 'text-white'}>{children}</span>;
+      return <span className={colorMap[value?.color] || 'text-black dark:text-white'}>{children}</span>;
     },
+    strong: ({ children }: any) => <strong className="font-bold text-black dark:text-white">{children}</strong>,
+    em: ({ children }: any) => <em className="italic text-black dark:text-white">{children}</em>,
+    code: ({ children }: any) => (
+      <code className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-sm text-black dark:text-white">
+        {children}
+      </code>
+    ),
     link: ({ children, value }: any) => {
       const isExternal = !value.href?.startsWith("/");
       return (
@@ -88,8 +103,13 @@ const ptComponents = {
   },
 
   list: {
-    bullet: ({ children }: any) => <ul className="space-y-4 mb-10 list-none max-w-2xl">{children}</ul>,
-    task: ({ children }: any) => <div className="space-y-4 mb-12 max-w-2xl">{children}</div>,
+    bullet: ({ children }: any) => <ul className="space-y-3 mb-8 list-none">{children}</ul>,
+    number: ({ children }: any) => (
+      <ol className="space-y-3 mb-10 list-decimal pl-6 marker:text-blue-600">
+        {children}
+      </ol>
+    ),
+    task: ({ children }: any) => <div className="space-y-4 mb-12">{children}</div>,
   },
 
   listItem: {
@@ -101,6 +121,11 @@ const ptComponents = {
         <span className="text-lg font-black uppercase tracking-tight leading-none">
           {children}
         </span>
+      </li>
+    ),
+    number: ({ children }: any) => (
+      <li className="text-[16px] leading-[1.65] font-normal text-black dark:text-white marker:text-blue-600">
+        {children}
       </li>
     ),
     task: ({ children }: any) => (
@@ -119,7 +144,7 @@ const ptComponents = {
   types: {
     /* PROFESSIONAL BULLET LIST */
     bulletList: ({ value }: any) => (
-      <div className="my-8 space-y-3 max-w-2xl">
+      <div className="my-8 space-y-3">
         {value.items?.map((item: any, index: number) => {
           const iconMap: any = {
             circle: '●',
@@ -139,10 +164,14 @@ const ptComponents = {
                   : 'border-zinc-700 bg-zinc-900/40'
               }`}
             >
-              <span className={`mr-4 text-lg font-bold flex-shrink-0 ${item.highlight ? 'text-blue-500' : 'text-white'}`}>
+              <span
+                className={`mr-4 text-lg font-bold flex-shrink-0 ${
+                  item.highlight ? 'text-blue-500' : 'text-black dark:text-white'
+                }`}
+              >
                 {icon}
               </span>
-              <span className="text-white font-normal leading-[1.5]">
+              <span className="text-black dark:text-white font-normal leading-[1.4]">
                 {item.text}
               </span>
             </div>
@@ -153,7 +182,7 @@ const ptComponents = {
 
     /* ENHANCED ROADMAP TIMELINE */
     roadmap: ({ value }: any) => (
-      <div className="relative my-8 pl-8 max-w-2xl">
+      <div className="relative my-8 pl-8">
         {/* Timeline line */}
         <div className="absolute left-3 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-600 to-blue-400" />
         
@@ -178,7 +207,7 @@ const ptComponents = {
                   <span className={`text-sm font-bold uppercase tracking-widest ${color.text}`}>
                     {step.year}
                   </span>
-                  <h3 className="text-2xl font-black mt-2 mb-4 text-white uppercase tracking-tighter leading-[1.2]">
+                  <h3 className="text-2xl font-black mt-2 mb-4 text-black dark:text-white uppercase tracking-tighter leading-[1.2]">
                     {step.title}
                   </h3>
                   
@@ -194,10 +223,14 @@ const ptComponents = {
                               : 'border-zinc-700 bg-zinc-900/40'
                           }`}
                         >
-                          <span className={`mr-3 font-bold flex-shrink-0 ${taskItem.completed ? 'text-green-500' : 'text-white'}`}>
+                          <span
+                            className={`mr-3 font-bold flex-shrink-0 ${
+                              taskItem.completed ? "text-green-500" : "text-black dark:text-white"
+                            }`}
+                          >
                             {taskItem.completed ? '✓' : '○'}
                           </span>
-                          <span className="text-white font-normal leading-[1.5]">
+                          <span className="text-black dark:text-white font-normal leading-[1.4]">
                             {taskItem.task}
                           </span>
                         </li>
@@ -291,7 +324,7 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
 
       <main className="max-w-5xl mx-auto px-6 py-24">
         <header className="mb-16">
-          <div className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-8">
+          <div className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-200 mb-8">
             <Link href="/" className="hover:text-blue-600 transition-colors">HOME</Link>
             <span>/</span>
             <span className="text-black dark:text-white">{resource.category}</span>
@@ -308,7 +341,7 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
             className={`px-8 py-4 rounded-[20px] border-[6px] text-[11px] font-black uppercase tracking-widest transition-all duration-400 ${
               activeTab === -1
                 ? "bg-blue-600 border-blue-600 text-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-none -translate-x-1 -translate-y-1"
-                : "bg-white dark:bg-zinc-900 border-black dark:border-zinc-800 text-black dark:text-zinc-400 hover:border-blue-600"
+                : "bg-white dark:bg-zinc-900 border-black dark:border-zinc-800 text-black dark:text-zinc-200 hover:border-blue-600"
             }`}
           >
             Overview
@@ -321,7 +354,7 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
               className={`px-8 py-4 rounded-[20px] border-[6px] text-[11px] font-black uppercase tracking-widest transition-all duration-400 ${
                 activeTab === index
                   ? "bg-blue-600 border-blue-600 text-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-none -translate-x-1 -translate-y-1"
-                  : "bg-white dark:bg-zinc-900 border-black dark:border-zinc-800 text-black dark:text-zinc-400 hover:border-blue-600"
+                  : "bg-white dark:bg-zinc-900 border-black dark:border-zinc-800 text-black dark:text-zinc-200 hover:border-blue-600"
               }`}
             >
               {section.subCategoryName}
@@ -378,7 +411,7 @@ export default function ResourcePage({ params }: { params: Promise<{ slug: strin
         </div>
 
         <footer className="mt-60 pb-16 text-center border-t-[6px] border-black dark:border-zinc-800 pt-16">
-          <p className="text-[12px] font-black uppercase tracking-[1em] text-zinc-300 dark:text-zinc-800">
+          <p className="text-[12px] font-black uppercase tracking-[1em] text-zinc-300 dark:text-[#f5f5f5]">
             README NOT • 2026
           </p>
         </footer>

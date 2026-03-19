@@ -72,7 +72,7 @@ export default function Home() {
         {["Structured Path", "Verified Content", "Always Free"].map((feature, i) => (
           <div key={feature}>
             <h4 className="font-black uppercase tracking-widest text-sm text-blue-600 mb-3">{feature}</h4>
-            <p className="text-base text-zinc-500 dark:text-white leading-relaxed font-medium">
+            <p className="text-base text-zinc-600 dark:text-white leading-[1.4] font-medium">
               {i === 0 && "Resources mapped to your 8th-12th grade timeline."}
               {i === 1 && "Proven materials from successful admissions."}
               {i === 2 && "No paywalls or signups. Just quality info."}
@@ -88,7 +88,7 @@ export default function Home() {
           placeholder="Search resources (e.g. 'SAT' or 'Reading')..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-6 pl-14 rounded-[32px] border-[5px] border-black dark:border-zinc-800 bg-transparent dark:bg-zinc-900/50 text-black dark:text-white font-black outline-none transition-all shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:shadow-none focus:ring-4 focus:ring-blue-600 dark:placeholder:text-zinc-500"
+          className="w-full p-6 pl-14 rounded-[32px] border-[5px] border-black dark:border-zinc-800 bg-transparent dark:bg-zinc-900/50 text-black dark:text-white font-black outline-none transition-all shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:shadow-none focus:ring-4 focus:ring-blue-600 placeholder:text-zinc-500 dark:placeholder:text-zinc-400"
         />
         <svg className="absolute left-6 top-6 h-6 w-6 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -104,7 +104,7 @@ export default function Home() {
             className={`text-sm font-black transition-all whitespace-nowrap tracking-widest ${
               activeCategory === cat 
                 ? "text-blue-600 translate-y-[-2px]" 
-                : "text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white"
+                : "text-zinc-400 dark:text-zinc-200 hover:text-black dark:hover:text-white"
             }`}
           >
             {cat.toUpperCase()}
@@ -164,7 +164,7 @@ export default function Home() {
                 animate={{ opacity: 1 }} 
                 className="col-span-full py-20 text-center"
               >
-                <p className="text-2xl font-black text-zinc-300 dark:text-zinc-600 uppercase tracking-tighter">No resources found for "{searchQuery}"</p>
+                <p className="text-2xl font-black text-zinc-300 dark:text-white uppercase tracking-tighter">No resources found for "{searchQuery}"</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -172,7 +172,7 @@ export default function Home() {
       )}
 
       <footer className="mt-40 pb-10 text-center border-t-[5px] border-black dark:border-zinc-800 pt-10">
-        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-zinc-300 dark:text-zinc-500">
+        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-zinc-300 dark:text-zinc-200">
           README NOT • 2026
         </p>
       </footer>

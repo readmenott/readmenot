@@ -6,8 +6,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* Force Inter for the highest clarity and legibility */
-  --font-sans: 'Inter', var(--font-geist-sans), system-ui, sans-serif;
+  /* Clean, modern, highly readable system sans stack */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -42,8 +42,12 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: var(--font-sans), system-ui, sans-serif;
+  line-height: 1.45;
+  font-kerning: normal;
+  font-feature-settings: "kern", "liga" 1;
   -webkit-font-smoothing: antialiased; /* Essential for text clarity */
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   transition: background-color 0.8s var(--ease-wow), color 0.8s var(--ease-wow);
 }
 
@@ -85,7 +89,7 @@ main {
 }
 
 .prose p {
-  @apply mb-4 leading-[1.5] text-black dark:text-white text-base font-normal antialiased;
+  @apply mb-3 leading-[1.4] text-black dark:text-white font-normal antialiased;
   text-decoration: none;
 }
 
@@ -111,27 +115,6 @@ main {
   text-decoration: none;
 }
 
-/* 7. PLACEHOLDER TEXT - WHITE */
-input::placeholder {
-  color: white;
-  opacity: 1;
-}
-
-input::-webkit-input-placeholder {
-  color: white;
-  opacity: 1;
-}
-
-input::-moz-placeholder {
-  color: white;
-  opacity: 1;
-}
-
-input:-ms-input-placeholder {
-  color: white;
-  opacity: 1;
-}
-
 /* 8. ROADMAP / CHECKBOX STYLE */
 .roadmap-container {
   @apply flex items-center gap-4 mb-6 p-6 border-[6px] border-black dark:border-zinc-800 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30;
@@ -142,6 +125,10 @@ input:-ms-input-placeholder {
 }
 
 /* UTILITIES */
+::selection {
+  @apply bg-blue-600 text-white;
+}
+
 ::selection {
   @apply bg-blue-600 text-white;
 }

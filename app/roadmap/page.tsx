@@ -28,7 +28,7 @@ export default function Roadmap() {
             
             <ul className="space-y-4">
               {step.tasks.map((task, i) => (
-                <li key={i} className="flex items-start text-zinc-700 dark:text-zinc-200 text-lg font-medium leading-tight">
+                <li key={i} className="flex items-start text-zinc-800 dark:text-white text-lg font-medium leading-[1.4]">
                   <span className="mr-4 text-blue-600 font-black">✓</span> {task}
                 </li>
               ))}
